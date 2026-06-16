@@ -721,6 +721,42 @@
       font-size: .72rem;
     }
 
+    .sound-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 82px;
+      z-index: 21;
+      transform: translateX(-50%) translateY(18px);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(201,164,92,.38);
+      background: rgba(255,255,255,.88);
+      color: var(--gold-dark);
+      box-shadow: 0 18px 42px rgba(51,43,31,.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-family: 'Cinzel', serif;
+      font-size: .76rem;
+      letter-spacing: .06em;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease, transform .28s ease;
+    }
+
+    .sound-toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .sound-toast span {
+      font-size: 1.05rem;
+    }
+
     @media (max-width: 560px) {
       .audio-control {
         right: 12px;
@@ -732,6 +768,12 @@
 
       .audio-control .audio-label {
         display: none;
+      }
+
+      .sound-toast {
+        bottom: 76px;
+        font-size: .68rem;
+        padding: 10px 15px;
       }
     }
 
@@ -876,8 +918,13 @@
     Los navegadores pueden bloquear la reproducción automática con sonido; por eso
     el botón queda funcional para activar o pausar.
   -->
-  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-3" preload="auto" autoplay loop playsinline muted></audio>
+  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-4" preload="auto" autoplay loop playsinline muted></audio>
   <button class="audio-control" id="audioBtn" type="button" aria-label="Pausar o activar música"><span id="audioIcon">♪</span><span class="audio-label" id="audioLabel">Música</span></button>
+
+  <div class="sound-toast" id="soundToast" role="button" tabindex="0" aria-label="Activar música">
+    <span>♪</span>
+    <strong>Activar música</strong>
+  </div>
 
   <main class="page">
     <header class="hero lux-card">
@@ -1228,33 +1275,49 @@
       Archivo requerido:
       assets/audio/coraline-exploration.mp3
 
-      En el HTML se usa ?v=20260616-3 solo para evitar caché.
+      En el HTML se usa ?v=20260616-4 solo para evitar caché.
       El nombre real del archivo debe seguir siendo coraline-exploration.mp3.
 
-      Importante:
-      Usa únicamente un archivo de audio para el que tengas permiso/licencia.
-
-      Autoplay:
-      Los navegadores modernos pueden bloquear música automática con sonido.
-      Este bloque usa la estrategia más compatible:
-      1. Inicia el audio desde la etiqueta <audio autoplay muted>.
-      2. Intenta activar sonido al cargar la página.
-      3. Si el navegador lo bloquea, activa la música con el primer toque/clic.
-      4. El botón permite pausar o reanudar.
+      Chrome:
+      Chrome suele bloquear audio automático con sonido. La forma más fuerte
+      permitida por Chrome es iniciar el audio en silencio con autoplay muted,
+      precargarlo y quitar silencio al primer gesto del usuario.
     */
 
     const bgMusic = document.getElementById("bgMusic");
     const audioBtn = document.getElementById("audioBtn");
     const audioIcon = document.getElementById("audioIcon");
     const audioLabel = document.getElementById("audioLabel");
+    const soundToast = document.getElementById("soundToast");
 
     let musicUnlocked = false;
     let userPausedMusic = false;
+    let toastTimer = null;
     const MUSIC_VOLUME = 0.42;
+
+    function isChromeLike() {
+      return /Chrome|CriOS|Chromium|Edg/i.test(navigator.userAgent);
+    }
 
     function setMusicVolume(volume = MUSIC_VOLUME) {
       if (!bgMusic) return;
       bgMusic.volume = volume;
+    }
+
+    function showSoundToast() {
+      if (!soundToast || userPausedMusic || musicUnlocked) return;
+
+      soundToast.classList.add("show");
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        soundToast.classList.remove("show");
+      }, 6500);
+    }
+
+    function hideSoundToast() {
+      if (!soundToast) return;
+      soundToast.classList.remove("show");
     }
 
     function updateAudioButton() {
@@ -1265,6 +1328,7 @@
         audioIcon.textContent = "❚❚";
         audioLabel.textContent = "Pausar";
         audioBtn.setAttribute("aria-label", "Pausar música");
+        hideSoundToast();
       } else if (!bgMusic.paused && bgMusic.muted) {
         audioBtn.classList.add("playing");
         audioIcon.textContent = "♪";
@@ -1282,38 +1346,48 @@
       if (!bgMusic) return;
 
       let step = 0;
-      const steps = 10;
+      const steps = 12;
       const target = MUSIC_VOLUME;
 
-      bgMusic.volume = 0.05;
+      bgMusic.volume = 0.04;
       const fade = setInterval(() => {
         step++;
-        bgMusic.volume = Math.min(target, 0.05 + (target - 0.05) * (step / steps));
+        bgMusic.volume = Math.min(target, 0.04 + (target - 0.04) * (step / steps));
 
         if (step >= steps) {
           clearInterval(fade);
           bgMusic.volume = target;
         }
-      }, 120);
+      }, 90);
     }
 
-    async function playMusic({ forceSound = true } = {}) {
+    async function startMutedAutoplay() {
+      if (!bgMusic || userPausedMusic) return false;
+
+      try {
+        bgMusic.muted = true;
+        bgMusic.volume = 0;
+        bgMusic.setAttribute("muted", "");
+        bgMusic.setAttribute("autoplay", "");
+        bgMusic.setAttribute("playsinline", "");
+        await bgMusic.play();
+        updateAudioButton();
+        return true;
+      } catch (error) {
+        updateAudioButton();
+        return false;
+      }
+    }
+
+    async function playWithSound() {
       if (!bgMusic) return false;
 
       try {
+        bgMusic.muted = false;
+        bgMusic.removeAttribute("muted");
         setMusicVolume();
-
-        if (forceSound) {
-          bgMusic.muted = false;
-        }
-
         await bgMusic.play();
-
-        if (forceSound) {
-          bgMusic.muted = false;
-          fadeInVolume();
-        }
-
+        fadeInVolume();
         musicUnlocked = true;
         userPausedMusic = false;
         updateAudioButton();
@@ -1327,29 +1401,16 @@
     async function startAutomaticMusic() {
       if (!bgMusic || userPausedMusic) return;
 
-      // Primer intento: autoplay con sonido.
-      bgMusic.muted = false;
-      setMusicVolume();
+      // 1) Chrome casi siempre permite esto: audio corriendo en muted.
+      await startMutedAutoplay();
 
-      const soundStarted = await playMusic({ forceSound: true });
-      if (soundStarted) return;
+      // 2) Intento de sonido real. Algunos navegadores lo permiten; Chrome puede bloquearlo.
+      const soundOk = await playWithSound();
 
-      // Segundo intento: autoplay permitido en silencio.
-      try {
-        bgMusic.muted = true;
-        bgMusic.volume = 0;
-        await bgMusic.play();
-
-        // Intento de activar sonido después de que el audio ya está corriendo.
-        setTimeout(() => {
-          if (!userPausedMusic) {
-            bgMusic.muted = false;
-            fadeInVolume();
-            updateAudioButton();
-          }
-        }, 900);
-      } catch (error) {
-        updateAudioButton();
+      // 3) Si Chrome bloquea el sonido, dejamos el audio ya cargado/corriendo y mostramos aviso.
+      if (!soundOk && isChromeLike()) {
+        await startMutedAutoplay();
+        showSoundToast();
       }
     }
 
@@ -1359,6 +1420,8 @@
       userPausedMusic = true;
       bgMusic.pause();
       bgMusic.muted = false;
+      bgMusic.removeAttribute("muted");
+      hideSoundToast();
       updateAudioButton();
     }
 
@@ -1371,11 +1434,15 @@
       if (!bgMusic) return;
 
       if (bgMusic.paused || bgMusic.muted) {
-        bgMusic.muted = false;
-        await playMusic({ forceSound: true });
+        await playWithSound();
       } else {
         pauseMusic();
       }
+    }
+
+    async function unlockMusicFromGesture() {
+      if (!bgMusic || userPausedMusic) return;
+      await playWithSound();
     }
 
     if (bgMusic && audioBtn) {
@@ -1383,6 +1450,16 @@
       bgMusic.load();
 
       audioBtn.addEventListener("click", toggleMusic);
+
+      if (soundToast) {
+        soundToast.addEventListener("click", unlockMusicFromGesture);
+        soundToast.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            unlockMusicFromGesture();
+          }
+        });
+      }
 
       bgMusic.addEventListener("play", updateAudioButton);
       bgMusic.addEventListener("pause", updateAudioButton);
@@ -1397,36 +1474,47 @@
           "aria-label",
           "No se encontró el archivo de música assets/audio/coraline-exploration.mp3"
         );
-        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-3");
+        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-4");
       });
 
-      // Intentos de arranque automático lo antes posible.
-      document.addEventListener("DOMContentLoaded", () => {
+      // Intentos tempranos para Chrome y navegadores compatibles.
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startAutomaticMusic);
+      } else {
         startAutomaticMusic();
-      });
+      }
 
       window.addEventListener("load", () => {
-        setTimeout(startAutomaticMusic, 300);
-        setTimeout(startAutomaticMusic, 1200);
+        setTimeout(startAutomaticMusic, 250);
+        setTimeout(startAutomaticMusic, 1100);
+        setTimeout(() => {
+          if (bgMusic.paused || bgMusic.muted) showSoundToast();
+        }, 1800);
       });
 
-      // Si el navegador bloquea el sonido, el primer gesto lo desbloquea.
-      const unlockMusicOnce = async () => {
-        if (!userPausedMusic) {
-          bgMusic.muted = false;
-          await playMusic({ forceSound: true });
-        }
+      // Cualquier gesto real desbloquea sonido en Chrome.
+      const unlockEvents = ["pointerdown", "pointerup", "click", "touchstart", "touchend", "keydown", "wheel", "scroll"];
 
-        window.removeEventListener("pointerdown", unlockMusicOnce);
-        window.removeEventListener("touchstart", unlockMusicOnce);
-        window.removeEventListener("keydown", unlockMusicOnce);
-        window.removeEventListener("scroll", unlockMusicOnce);
+      const unlockMusicOnce = async () => {
+        await unlockMusicFromGesture();
+
+        unlockEvents.forEach((eventName) => {
+          window.removeEventListener(eventName, unlockMusicOnce);
+          document.removeEventListener(eventName, unlockMusicOnce);
+        });
       };
 
-      window.addEventListener("pointerdown", unlockMusicOnce, { once: true });
-      window.addEventListener("touchstart", unlockMusicOnce, { once: true });
-      window.addEventListener("keydown", unlockMusicOnce, { once: true });
-      window.addEventListener("scroll", unlockMusicOnce, { once: true });
+      unlockEvents.forEach((eventName) => {
+        window.addEventListener(eventName, unlockMusicOnce, { once: true, passive: true });
+        document.addEventListener(eventName, unlockMusicOnce, { once: true, passive: true });
+      });
+
+      // Refuerzo cuando la pestaña vuelve a estar visible.
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && !userPausedMusic && (bgMusic.paused || bgMusic.muted)) {
+          startAutomaticMusic();
+        }
+      });
 
       updateAudioButton();
     }
