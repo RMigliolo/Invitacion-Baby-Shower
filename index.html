@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baby Shower</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ivory: #fbfaf7;
+      --soft-white: rgba(255,255,255,.82);
+      --warm-white: #fffdf8;
+      --gray: #77736e;
+      --gray-soft: #d8d2c9;
+      --charcoal: #2d2a27;
+      --gold: #c9a45c;
+      --gold-dark: #9f7a32;
+      --gold-light: #f4e3b4;
+      --rose: #f3c7d2;
+      --blue: #c8e4f3;
+      --mist-blue: #dcecf4;
+      --mist-violet: #e8dfef;
+      --shadow: 0 24px 70px rgba(92, 75, 48, .14);
+      --border: rgba(201, 164, 92, .34);
+      --card: rgba(255,255,255,.74);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--charcoal);
+      font-family: 'Montserrat', sans-serif;
+      text-align: center;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 8% 10%, rgba(243,199,210,.34) 0 7%, transparent 22%),
+        radial-gradient(circle at 88% 14%, rgba(200,228,243,.40) 0 8%, transparent 24%),
+        radial-gradient(circle at 50% 72%, rgba(232,223,239,.40) 0 9%, transparent 28%),
+        linear-gradient(135deg, #ffffff 0%, #f8f5ef 42%, #ece8e1 100%);
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+      pointer-events: none;
+      opacity: .82;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(243,199,210,.32), transparent 18%),
+        radial-gradient(circle at 84% 17%, rgba(200,228,243,.34), transparent 18%),
+        radial-gradient(circle at 20% 82%, rgba(232,223,239,.30), transparent 20%),
+        radial-gradient(circle at 76% 76%, rgba(244,227,180,.22), transparent 22%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.94), transparent 12%, transparent 88%, rgba(255,255,255,.94)),
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.84), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(255,255,255,.70), transparent 42%);
+    }
+
+    /*
+      Fondo sutil con PNG transparentes de Twemoji vía jsDelivr.
+      No se usan imágenes cuadradas con fondo blanco.
+      La inspiración es de cuento fantástico: botones, llaves, costura,
+      flores, peluches y objetos de bebé, sin usar personajes de la película.
+    */
+    .web-png-decor {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .png-deco {
+      position: absolute;
+      display: block;
+      width: clamp(32px, 5.5vw, 72px);
+      height: auto;
+      opacity: .16;
+      filter: saturate(.72) sepia(.08) drop-shadow(0 16px 18px rgba(70, 55, 30, .10));
+      animation: floatSoft 12s ease-in-out infinite;
+    }
+
+    .png-deco.large {
+      width: clamp(48px, 7vw, 92px);
+      opacity: .14;
+    }
+
+    .png-deco.tiny {
+      width: clamp(24px, 3.2vw, 44px);
+      opacity: .18;
+    }
+
+    .png-deco:nth-child(1)  { left: 5%;  top: 9%;   animation-delay: 0s;  transform: rotate(-8deg); }
+    .png-deco:nth-child(2)  { left: 18%; top: 31%;  animation-delay: -3s; transform: rotate(7deg); }
+    .png-deco:nth-child(3)  { left: 7%;  top: 63%;  animation-delay: -6s; transform: rotate(-5deg); }
+    .png-deco:nth-child(4)  { left: 86%; top: 8%;   animation-delay: -2s; transform: rotate(8deg); }
+    .png-deco:nth-child(5)  { left: 78%; top: 34%;  animation-delay: -7s; transform: rotate(-7deg); }
+    .png-deco:nth-child(6)  { left: 90%; top: 66%;  animation-delay: -4s; transform: rotate(6deg); }
+    .png-deco:nth-child(7)  { left: 36%; top: 7%;   animation-delay: -5s; transform: rotate(8deg); }
+    .png-deco:nth-child(8)  { left: 56%; top: 91%;  animation-delay: -8s; transform: rotate(-8deg); }
+    .png-deco:nth-child(9)  { left: 3%;  top: 87%;  animation-delay: -1s; transform: rotate(6deg); }
+    .png-deco:nth-child(10) { left: 94%; top: 88%;  animation-delay: -6s; transform: rotate(-6deg); }
+    .png-deco:nth-child(11) { left: 46%; top: 39%;  animation-delay: -9s; transform: rotate(10deg); opacity: .10; }
+    .png-deco:nth-child(12) { left: 65%; top: 58%;  animation-delay: -2s; transform: rotate(-9deg); opacity: .12; }
+
+    .button-cloud {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: .42;
+    }
+
+    .button-cloud i {
+      position: absolute;
+      width: clamp(18px, 2.8vw, 32px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(159,122,50,.20);
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255,255,255,.80), transparent 30%),
+        radial-gradient(circle at 40% 40%, rgba(201,164,92,.18) 0 6%, transparent 7% 15%, rgba(201,164,92,.14) 16% 22%, transparent 23%),
+        linear-gradient(135deg, rgba(243,199,210,.22), rgba(200,228,243,.18));
+      box-shadow: inset 0 0 0 4px rgba(255,255,255,.28), 0 12px 24px rgba(90,70,40,.08);
+      animation: floatSoft 14s ease-in-out infinite;
+    }
+
+    .button-cloud i:nth-child(1) { left: 12%; top: 20%; animation-delay: -1s; }
+    .button-cloud i:nth-child(2) { left: 72%; top: 21%; animation-delay: -6s; transform: scale(.78); }
+    .button-cloud i:nth-child(3) { left: 23%; top: 77%; animation-delay: -3s; transform: scale(.64); }
+    .button-cloud i:nth-child(4) { left: 83%; top: 78%; animation-delay: -8s; transform: scale(.84); }
+    .button-cloud i:nth-child(5) { left: 51%; top: 14%; animation-delay: -4s; transform: scale(.58); }
+    .button-cloud i:nth-child(6) { left: 47%; top: 69%; animation-delay: -10s; transform: scale(.70); }
+
+    .thread-lines {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: .18;
+      background-image:
+        linear-gradient(115deg, transparent 0 48%, rgba(159,122,50,.22) 49%, transparent 50%),
+        linear-gradient(65deg, transparent 0 50%, rgba(103,143,164,.16) 51%, transparent 52%);
+      background-size: 420px 420px, 520px 520px;
+      mask-image: radial-gradient(circle at center, rgba(0,0,0,.55), transparent 70%);
+    }
+
+    @keyframes floatSoft {
+      0%, 100% { translate: 0 0; rotate: -3deg; }
+      50% { translate: 0 -14px; rotate: 4deg; }
+    }
+
+    .page {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .lux-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lux-card::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid rgba(201,164,92,.22);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .lux-card::after {
+      content: "✦  ◌  ✧";
+      position: absolute;
+      right: 22px;
+      top: 18px;
+      color: rgba(201,164,92,.18);
+      font-size: 1.1rem;
+      letter-spacing: .35rem;
+      pointer-events: none;
+    }
+
+    .card-deco {
+      position: absolute;
+      width: clamp(42px, 6vw, 78px);
+      height: auto;
+      opacity: .13;
+      z-index: 1;
+      pointer-events: none;
+      filter: saturate(.72) drop-shadow(0 14px 20px rgba(80,60,30,.10));
+    }
+
+    .card-deco.top-left {
+      left: 24px;
+      top: 22px;
+      transform: rotate(-9deg);
+    }
+
+    .card-deco.bottom-right {
+      right: 22px;
+      bottom: 18px;
+      transform: rotate(8deg);
+    }
+
+    .eyebrow {
+      color: var(--gold-dark);
+      font-family: 'Cinzel', serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .24rem;
+      text-transform: uppercase;
+    }
+
+    .script {
+      font-family: 'Great Vibes', cursive;
+      color: var(--gold-dark);
+      font-weight: 400;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      letter-spacing: .08em;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 7vw, 5.6rem);
+      line-height: .95;
+      color: var(--charcoal);
+      margin: 10px 0;
+    }
+
+    h2 {
+      font-size: clamp(1.25rem, 3vw, 2.1rem);
+      color: var(--charcoal);
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: clamp(1rem, 2.2vw, 1.35rem);
+      color: var(--gold-dark);
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--gray);
+      line-height: 1.75;
+      font-size: clamp(.95rem, 1.7vw, 1.05rem);
+    }
+
+    .gold-line {
+      width: 86px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 20px auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      border: 1px solid rgba(159,122,50,.42);
+      border-radius: 999px;
+      padding: 13px 26px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+      font-family: 'Cinzel', serif;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-decoration: none;
+      box-shadow: 0 12px 24px rgba(159,122,50,.18);
+      cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 32px rgba(159,122,50,.25);
+      filter: brightness(1.03);
+    }
+
+    .btn.secondary {
+      color: var(--gold-dark);
+      background: rgba(255,255,255,.68);
+      border-color: rgba(201,164,92,.38);
+      box-shadow: none;
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      align-items: center;
+      gap: 26px;
+      padding: clamp(24px, 5vw, 54px);
+      margin-top: 10px;
+    }
+
+    .hero-text {
+      padding: clamp(16px, 3vw, 36px);
+      text-align: left;
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero-text .script {
+      font-size: clamp(2.2rem, 5vw, 4.8rem);
+      display: block;
+      margin-bottom: -4px;
+    }
+
+    .hero-copy {
+      max-width: 570px;
+      margin-top: 18px;
+    }
+
+    .hero-photo {
+      height: min(760px, 82vh);
+      min-height: 520px;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(201,164,92,.36);
+      box-shadow: 0 30px 80px rgba(51,43,31,.20);
+      background: #eee;
+      z-index: 3;
+    }
+
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .hero-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 48%, rgba(0,0,0,.22));
+      pointer-events: none;
+    }
+
+    .date-pill {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 26px;
+      padding: 12px 18px;
+      border: 1px solid rgba(201,164,92,.34);
+      border-radius: 999px;
+      background: rgba(255,255,255,.58);
+      color: var(--charcoal);
+      font-family: 'Cinzel', serif;
+      font-size: .9rem;
+      letter-spacing: .08em;
+    }
+
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    section {
+      padding: clamp(32px, 5vw, 54px);
+      margin: 26px 0;
+    }
+
+    .welcome {
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 3;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 26px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .time-box {
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.56));
+      border: 1px solid rgba(201,164,92,.26);
+      border-radius: 20px;
+      padding: 20px 10px;
+    }
+
+    .time-box strong {
+      display: block;
+      color: var(--charcoal);
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .time-box span {
+      display: block;
+      color: var(--gray);
+      font-size: .72rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+      margin-top: 22px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .detail {
+      padding: 26px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(201,164,92,.22);
+    }
+
+    .detail .icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 26px;
+      border: 1px solid rgba(201,164,92,.32);
+      background: #fff;
+      box-shadow: 0 18px 48px rgba(51,43,31,.12);
+      margin-top: 20px;
+      z-index: 3;
+    }
+
+    .slides {
+      display: flex;
+      transition: transform .55s ease;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: clamp(440px, 72vw, 720px);
+      position: relative;
+      background: #f2eee7;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: linear-gradient(135deg, #fff, #f1ede6);
+      display: block;
+    }
+
+    .slide.portrait img {
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,164,92,.45);
+      background: rgba(255,255,255,.76);
+      color: var(--gold-dark);
+      font-size: 1.6rem;
+      cursor: pointer;
+      z-index: 5;
+      backdrop-filter: blur(8px);
+    }
+
+    .carousel-btn.prev {
+      left: 14px;
+    }
+
+    .carousel-btn.next {
+      right: 14px;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 0;
+      background: rgba(159,122,50,.26);
+      cursor: pointer;
+    }
+
+    .dot.active {
+      width: 24px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+
+    .gender-wrap {
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      z-index: 3;
+    }
+
+    .gender-image {
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(201,164,92,.28);
+      background: #fff;
+    }
+
+    .gender-image img {
+      width: 100%;
+      display: block;
+    }
+
+    .gender-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .gender-card {
+      border: 1px solid rgba(201,164,92,.25);
+      border-radius: 22px;
+      padding: 20px 12px;
+      cursor: pointer;
+      background: rgba(255,255,255,.66);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      user-select: none;
+    }
+
+    .gender-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .gender-card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 15px 35px rgba(159,122,50,.18);
+    }
+
+    .gender-card.girl.selected {
+      background: linear-gradient(180deg, rgba(243,199,210,.75), rgba(255,255,255,.76));
+    }
+
+    .gender-card.boy.selected {
+      background: linear-gradient(180deg, rgba(200,228,243,.85), rgba(255,255,255,.76));
+    }
+
+    .gender-card strong {
+      display: block;
+      font-family: 'Cinzel', serif;
+      letter-spacing: .08em;
+      color: var(--charcoal);
+      margin-bottom: 6px;
+    }
+
+    .map-box {
+      overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid rgba(201,164,92,.28);
+      margin-top: 20px;
+      background: #eee;
+      min-height: 320px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .map-box iframe {
+      width: 100%;
+      height: 360px;
+      border: 0;
+      display: block;
+    }
+
+    form {
+      max-width: 720px;
+      margin: 24px auto 0;
+      text-align: left;
+      position: relative;
+      z-index: 3;
+    }
+
+    .form-row {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      color: var(--gold-dark);
+      font-family: 'Cinzel', serif;
+      font-size: .76rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(201,164,92,.32);
+      border-radius: 16px;
+      padding: 14px 15px;
+      background: rgba(255,255,255,.74);
+      color: var(--charcoal);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(201,164,92,.12);
+    }
+
+    .confirm-center {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .audio-control {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 20;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      border: 1px solid rgba(201,164,92,.42);
+      background: rgba(255,255,255,.84);
+      color: var(--gold-dark);
+      box-shadow: 0 12px 36px rgba(51,43,31,.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: .03em;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+
+    .audio-control:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(51,43,31,.20);
+    }
+
+    .audio-control.playing {
+      background: linear-gradient(135deg, rgba(255,255,255,.86), rgba(244,227,180,.72));
+    }
+
+    .audio-control .audio-label {
+      font-size: .72rem;
+    }
+
+    @media (max-width: 560px) {
+      .audio-control {
+        right: 12px;
+        bottom: 12px;
+        height: 50px;
+        min-width: 50px;
+        padding: 0 13px;
+      }
+
+      .audio-control .audio-label {
+        display: none;
+      }
+    }
+
+    footer {
+      padding: 28px 16px 40px;
+      color: var(--gray);
+      font-size: .78rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 850px) {
+      .page {
+        padding: 14px;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .hero-text {
+        text-align: center;
+        order: 2;
+      }
+
+      .hero-photo {
+        order: 1;
+        height: 68vh;
+        min-height: 420px;
+      }
+
+      .quick-actions {
+        justify-content: center;
+      }
+
+      .date-pill {
+        justify-content: center;
+        border-radius: 22px;
+      }
+
+      .details-grid,
+      .gender-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .gender-image {
+        max-width: 340px;
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .png-deco {
+        width: 42px;
+        opacity: .13;
+      }
+
+      .png-deco.large {
+        width: 54px;
+      }
+
+      .png-deco.tiny {
+        width: 30px;
+      }
+
+      .button-cloud {
+        opacity: .32;
+      }
+
+      section {
+        padding: 30px 18px;
+        margin: 18px 0;
+      }
+
+      .countdown-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .gender-options {
+        grid-template-columns: 1fr;
+      }
+
+      .slide {
+        height: 520px;
+      }
+
+      .slide img {
+        object-fit: cover;
+        object-position: center top;
+      }
+
+      .carousel-btn {
+        width: 38px;
+        height: 38px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .quick-actions .btn {
+        width: auto;
+      }
+
+      .map-box iframe {
+        height: 320px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="thread-lines"></div>
+
+  <div class="web-png-decor" aria-hidden="true">
+    <img class="png-deco large" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f8.png" alt="" loading="lazy">
+    <img class="png-deco" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5dd-fe0f.png" alt="" loading="lazy">
+    <img class="png-deco tiny" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f338.png" alt="" loading="lazy">
+    <img class="png-deco" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f37c.png" alt="" loading="lazy">
+    <img class="png-deco large" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f5.png" alt="" loading="lazy">
+    <img class="png-deco tiny" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f319.png" alt="" loading="lazy">
+    <img class="png-deco" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f380.png" alt="" loading="lazy">
+    <img class="png-deco tiny" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2b50.png" alt="" loading="lazy">
+    <img class="png-deco" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f7.png" alt="" loading="lazy">
+    <img class="png-deco tiny" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f338.png" alt="" loading="lazy">
+    <img class="png-deco large" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f8.png" alt="" loading="lazy">
+    <img class="png-deco" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5dd-fe0f.png" alt="" loading="lazy">
+  </div>
+
+  <div class="button-cloud" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <!-- Música generada con Web Audio: no requiere archivo mp3.
+       Por seguridad, los navegadores solo permiten iniciarla cuando el invitado toca el botón. -->
+  <button class="audio-control" id="audioBtn" type="button" aria-label="Pausar o activar música"><span id="audioIcon">♪</span><span class="audio-label" id="audioLabel">Música</span></button>
+
+  <main class="page">
+    <header class="hero lux-card">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f380.png" alt="" loading="lazy">
+      <img class="card-deco bottom-right" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5dd-fe0f.png" alt="" loading="lazy">
+
+      <div class="hero-text">
+        <span class="eyebrow">Baby Shower</span>
+        <span class="script">Celebrando la llegada de
+        </span>
+        <h1>Nuestro<br>Bebé</h1>
+        <div class="gold-line"></div>
+        <p class="hero-copy">
+          Con mucha ilusión te invitamos a celebrar la próxima llegada de nuestro bebé.
+          Será una tarde especial para compartir amor, alegría y buenos deseos en familia.
+        </p>
+
+        <div class="date-pill">
+          <span>Sábado</span>
+          <strong>20 junio 2026</strong>
+          <span>4:00 p. m.</span>
+        </div>
+
+        <div class="quick-actions">
+          <a class="btn" href="#confirmacion">Confirmar con cariño</a>
+          <a class="btn secondary" href="#ubicacion">Ver ubicación</a>
+        </div>
+      </div>
+
+      <div class="hero-photo">
+        <img src="assets/img/eve-baby-1.jpeg" alt="Fotografía de Evelin López Luna">
+      </div>
+    </header>
+
+    <section class="lux-card">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f338.png" alt="" loading="lazy">
+      <img class="card-deco bottom-right" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f8.png" alt="" loading="lazy">
+
+      <div class="welcome">
+        <p class="eyebrow">Una dulce espera</p>
+        <h2>Nos encantará compartir este momento contigo</h2>
+        <div class="gold-line"></div>
+        <p>
+          Tu presencia hará más especial esta celebración. Ven a acompañarnos en una tarde
+          llena de detalles, ternura y buenos deseos para esta nueva etapa.
+        </p>
+      </div>
+    </section>
+
+    <section class="lux-card" id="contador">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f319.png" alt="" loading="lazy">
+      <img class="card-deco bottom-right" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2b50.png" alt="" loading="lazy">
+
+      <p class="eyebrow">Cuenta regresiva</p>
+      <h2>Faltan</h2>
+
+      <div class="countdown-grid">
+        <div class="time-box">
+          <strong id="days">00</strong>
+          <span>Días</span>
+        </div>
+        <div class="time-box">
+          <strong id="hours">00</strong>
+          <span>Horas</span>
+        </div>
+        <div class="time-box">
+          <strong id="minutes">00</strong>
+          <span>Minutos</span>
+        </div>
+        <div class="time-box">
+          <strong id="seconds">00</strong>
+          <span>Segundos</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="lux-card">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f5.png" alt="" loading="lazy">
+
+      <p class="eyebrow">Galería</p>
+      <h2>Momentos para recordar</h2>
+
+      <div class="carousel" aria-label="Carrusel de fotografías">
+        <button class="carousel-btn prev" type="button" onclick="moveSlide(-1)" aria-label="Foto anterior">‹</button>
+
+        <div class="slides" id="slides">
+          <div class="slide portrait">
+            <img src="assets/img/eve-baby-1.jpeg" alt="Evelin con vestido lila">
+          </div>
+          <div class="slide">
+            <img src="assets/img/eve-baby-2.png" alt="Collage de fotografías de Evelin">
+          </div>
+          <div class="slide portrait">
+            <img src="assets/img/eve-baby-3.jpeg" alt="Evelin con vestido blanco">
+          </div>
+        </div>
+
+        <button class="carousel-btn next" type="button" onclick="moveSlide(1)" aria-label="Foto siguiente">›</button>
+      </div>
+
+      <div class="dots" id="dots" aria-label="Indicadores del carrusel"></div>
+    </section>
+
+    <section class="lux-card">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f37c.png" alt="" loading="lazy">
+      <img class="card-deco bottom-right" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5dd-fe0f.png" alt="" loading="lazy">
+
+      <div class="gender-wrap">
+        <div class="gender-image">
+          <img src="assets/img/elige-sexo.png" alt="Dinámica para elegir si será niña o niño">
+        </div>
+
+        <div>
+          <p class="eyebrow">Dinámica</p>
+          <h2>¿Qué crees que será?</h2>
+          <p>
+            Elige tu predicción y envíala junto con tu confirmación. Será una forma divertida
+            de acompañarnos en esta dulce espera.
+          </p>
+
+          <div class="gender-options">
+            <div class="gender-card girl" onclick="selectGender('Niña', this)">
+              <strong>Niña</strong>
+              <span>Voto rosa</span>
+            </div>
+
+            <div class="gender-card boy" onclick="selectGender('Niño', this)">
+              <strong>Niño</strong>
+              <span>Voto azul</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lux-card">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f7.png" alt="" loading="lazy">
+
+      <p class="eyebrow">Detalles</p>
+      <h2>Fecha y hora</h2>
+
+      <div class="details-grid">
+        <div class="detail">
+          <div class="icon">🗓️</div>
+          <h3>Sábado 20 de junio</h3>
+          <p>Te esperamos para celebrar juntos este momento tan especial.</p>
+        </div>
+
+        <div class="detail">
+          <div class="icon">🕓</div>
+          <h3>4:00 p. m.</h3>
+          <p>Una tarde tranquila para compartir, convivir y celebrar con cariño.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lux-card" id="ubicacion">
+      <img class="card-deco bottom-right" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f338.png" alt="" loading="lazy">
+
+      <p class="eyebrow">Ubicación</p>
+      <h2>Cómo llegar</h2>
+      <p>
+        Río Acaponeta, Las Fuentes, C.P. 55404
+      </p>
+
+      <div class="map-box">
+        <iframe
+          title="Mapa de ubicación"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=Rio%20Acaponeta%2C%20Las%20Fuentes%2C%2055404&output=embed">
+        </iframe>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <a
+          class="btn"
+          target="_blank"
+          rel="noopener"
+          href="https://www.google.com/maps/search/?api=1&query=Rio%20Acaponeta%2C%20Las%20Fuentes%2C%2055404">
+          Abrir en Google Maps
+        </a>
+      </div>
+    </section>
+
+    <section class="lux-card" id="confirmacion">
+      <img class="card-deco top-left" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f380.png" alt="" loading="lazy">
+      <img class="card-deco bottom-right" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f8.png" alt="" loading="lazy">
+
+      <p class="eyebrow">RSVP</p>
+      <h2>Confirmación de asistencia</h2>
+      <p>
+        Puedes confirmar de forma individual o como familia.
+      </p>
+
+      <form onsubmit="enviarWhatsApp(event)">
+        <div class="form-row">
+          <label for="guestName">¿Quién confirma?</label>
+          <input id="guestName" type="text" placeholder="Ej. Familia Hernández / María López" required>
+        </div>
+
+        <div class="form-row">
+          <label for="attendance">¿Nos acompañas?</label>
+          <select id="attendance" required>
+            <option value="Sí, confirmamos con cariño">Sí, confirmamos con cariño</option>
+            <option value="No podremos asistir, pero enviamos nuestros mejores deseos">No podremos asistir</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="message">Mensaje para Evelin</label>
+          <textarea id="message" placeholder="Escribe un mensaje opcional..."></textarea>
+        </div>
+
+        <div class="confirm-center">
+          <button class="btn" type="submit">Confirmar con cariño</button>
+        </div>
+      </form>
+    </section>
+
+    <footer>
+      Te esperamos con mucho cariño · Baby Shower Evelin López Luna · 2026
+    </footer>
+  </main>
+
+  <script>
+    // ==============================
+    // CONFIGURACIÓN GENERAL
+    // ==============================
+    const eventDate = new Date("2026-06-20T16:00:00-06:00").getTime();
+    const whatsappNumber = "523222912998";
+    let genderChoice = "";
+
+    // ==============================
+    // CUENTA REGRESIVA
+    // ==============================
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+
+      if (distance <= 0) {
+        clearInterval(timer);
+        document.getElementById("days").textContent = "00";
+        document.getElementById("hours").textContent = "00";
+        document.getElementById("minutes").textContent = "00";
+        document.getElementById("seconds").textContent = "00";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("days").textContent = String(days).padStart(2, "0");
+      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+    }, 1000);
+
+    // ==============================
+    // CARRUSEL
+    // ==============================
+    let currentSlide = 0;
+    const slides = document.getElementById("slides");
+    const totalSlides = slides.children.length;
+    const dotsContainer = document.getElementById("dots");
+
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement("button");
+      dot.className = "dot" + (i === 0 ? " active" : "");
+      dot.type = "button";
+      dot.setAttribute("aria-label", "Ir a foto " + (i + 1));
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
+
+    function updateCarousel() {
+      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+      document.querySelectorAll(".dot").forEach((dot, index) => {
+        dot.classList.toggle("active", index === currentSlide);
+      });
+    }
+
+    function moveSlide(direction) {
+      currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateCarousel();
+    }
+
+    setInterval(() => {
+      moveSlide(1);
+    }, 6000);
+
+    // ==============================
+    // DINÁMICA NIÑO / NIÑA
+    // ==============================
+    function selectGender(value, element) {
+      genderChoice = value;
+
+      document.querySelectorAll(".gender-card").forEach(card => {
+        card.classList.remove("selected");
+      });
+
+      element.classList.add("selected");
+    }
+
+    // ==============================
+    // CONFIRMACIÓN POR WHATSAPP
+    // ==============================
+    function enviarWhatsApp(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("guestName").value.trim();
+      const attendance = document.getElementById("attendance").value;
+      const message = document.getElementById("message").value.trim();
+
+      if (!name) {
+        alert("Por favor escribe quién confirma.");
+        return;
+      }
+
+      let text = "Hola, confirmo mi respuesta para el Baby Shower de Evelin López Luna.%0A%0A";
+      text += `*Quién confirma:* ${encodeURIComponent(name)}%0A`;
+      text += `*Asistencia:* ${encodeURIComponent(attendance)}%0A`;
+      text += `*Mi predicción:* ${encodeURIComponent(genderChoice || "Aún no elegí")}%0A`;
+
+      if (message) {
+        text += `*Mensaje para Evelin:* ${encodeURIComponent(message)}%0A`;
+      }
+
+      text += "%0ACon mucho cariño.";
+
+      const url = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${text}`;
+      window.open(url, "_blank");
+    }
+
+    // ==============================
+    // MÚSICA DE CUNA TENUE
+    // ==============================
+    /*
+      Nota importante:
+      La mayoría de navegadores, sobre todo en celular, bloquean el audio automático
+      si la persona no ha tocado la pantalla. Este código intenta iniciar la música
+      al abrir la invitación con volumen bajo; si el navegador la bloquea, queda lista
+      para activarse con el primer toque en pantalla o con el botón de música.
+    */
+
+    let audioContext = null;
+    let masterGain = null;
+    let lullabyPlaying = false;
+    let lullabyStartedOnce = false;
+    let nextNoteTimer = null;
+    let noteIndex = 0;
+
+    const audioBtn = document.getElementById("audioBtn");
+    const audioIcon = document.getElementById("audioIcon");
+    const audioLabel = document.getElementById("audioLabel");
+
+    // Melodía original tipo canción de cuna, lenta y suave.
+    const lullabyNotes = [
+      { f: 392.00, d: 0.70 }, // G4
+      { f: 440.00, d: 0.70 }, // A4
+      { f: 493.88, d: 0.95 }, // B4
+      { f: 440.00, d: 0.80 },
+      { f: 392.00, d: 0.90 },
+      { f: 329.63, d: 1.05 }, // E4
+      { f: 392.00, d: 0.85 },
+      { f: 440.00, d: 1.15 },
+      { f: 392.00, d: 0.75 },
+      { f: 440.00, d: 0.75 },
+      { f: 493.88, d: 0.90 },
+      { f: 587.33, d: 1.05 }, // D5
+      { f: 493.88, d: 0.85 },
+      { f: 440.00, d: 0.85 },
+      { f: 392.00, d: 1.40 },
+      { f: 0,      d: 0.70 }
+    ];
+
+    function setupAudio() {
+      if (audioContext) return;
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioContext.createGain();
+
+      // Volumen general muy bajo y agradable.
+      masterGain.gain.setValueAtTime(0.018, audioContext.currentTime);
+      masterGain.connect(audioContext.destination);
+    }
+
+    function createSoftTone(frequency, duration) {
+      if (!audioContext || !masterGain || !frequency) return;
+
+      const now = audioContext.currentTime;
+      const oscMain = audioContext.createOscillator();
+      const oscWarm = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const filter = audioContext.createBiquadFilter();
+
+      oscMain.type = "sine";
+      oscWarm.type = "triangle";
+
+      oscMain.frequency.setValueAtTime(frequency, now);
+      oscWarm.frequency.setValueAtTime(frequency * 2, now);
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1250, now);
+      filter.Q.setValueAtTime(0.55, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.14, now + 0.16);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      oscMain.connect(gain);
+      oscWarm.connect(gain);
+      gain.connect(filter);
+      filter.connect(masterGain);
+
+      oscMain.start(now);
+      oscWarm.start(now);
+      oscMain.stop(now + duration + 0.05);
+      oscWarm.stop(now + duration + 0.05);
+    }
+
+    function updateAudioButton() {
+      if (lullabyPlaying) {
+        audioBtn.classList.add("playing");
+        audioIcon.textContent = "❚❚";
+        audioLabel.textContent = "Pausar";
+        audioBtn.setAttribute("aria-label", "Pausar música");
+      } else {
+        audioBtn.classList.remove("playing");
+        audioIcon.textContent = "♪";
+        audioLabel.textContent = "Música";
+        audioBtn.setAttribute("aria-label", "Activar música");
+      }
+    }
+
+    function scheduleNextNote() {
+      if (!lullabyPlaying) return;
+
+      const note = lullabyNotes[noteIndex];
+
+      if (note.f > 0) {
+        createSoftTone(note.f, note.d);
+      }
+
+      noteIndex = (noteIndex + 1) % lullabyNotes.length;
+
+      // Tempo lento tipo canción de cuna.
+      nextNoteTimer = setTimeout(scheduleNextNote, note.d * 1000 + 130);
+    }
+
+    async function startLullaby() {
+      setupAudio();
+
+      try {
+        if (audioContext.state === "suspended") {
+          await audioContext.resume();
+        }
+
+        if (audioContext.state !== "running") {
+          updateAudioButton();
+          return false;
+        }
+
+        if (!lullabyPlaying) {
+          lullabyPlaying = true;
+          lullabyStartedOnce = true;
+          noteIndex = 0;
+          updateAudioButton();
+          scheduleNextNote();
+        }
+
+        return true;
+      } catch (error) {
+        updateAudioButton();
+        return false;
+      }
+    }
+
+    function stopLullaby() {
+      lullabyPlaying = false;
+
+      if (nextNoteTimer) {
+        clearTimeout(nextNoteTimer);
+        nextNoteTimer = null;
+      }
+
+      updateAudioButton();
+    }
+
+    async function toggleLullaby() {
+      if (lullabyPlaying) {
+        stopLullaby();
+      } else {
+        await startLullaby();
+      }
+    }
+
+    audioBtn.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      await toggleLullaby();
+    });
+
+    // Intento de reproducción automática al abrir.
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        startLullaby();
+      }, 650);
+    });
+
+    // Si el navegador bloquea el autoplay, se activa con el primer toque/clic.
+    const unlockAudioOnce = async () => {
+      if (!lullabyStartedOnce) {
+        await startLullaby();
+      }
+
+      window.removeEventListener("pointerdown", unlockAudioOnce);
+      window.removeEventListener("touchstart", unlockAudioOnce);
+      window.removeEventListener("keydown", unlockAudioOnce);
+    };
+
+    window.addEventListener("pointerdown", unlockAudioOnce, { once: true });
+    window.addEventListener("touchstart", unlockAudioOnce, { once: true });
+    window.addEventListener("keydown", unlockAudioOnce, { once: true });
+
+    updateAudioButton();
+  </script>
+</body>
+</html>
