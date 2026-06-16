@@ -876,7 +876,7 @@
     Los navegadores pueden bloquear la reproducción automática con sonido; por eso
     el botón queda funcional para activar o pausar.
   -->
-  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3" preload="auto" loop playsinline></audio>
+  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-2" preload="auto" loop playsinline></audio>
   <button class="audio-control" id="audioBtn" type="button" aria-label="Pausar o activar música"><span id="audioIcon">♪</span><span class="audio-label" id="audioLabel">Música</span></button>
 
   <main class="page">
@@ -1228,6 +1228,9 @@
       Archivo requerido:
       assets/audio/coraline-exploration.mp3
 
+      En el HTML se usa ?v=20260616-2 solo para evitar caché.
+      El nombre real del archivo debe seguir siendo coraline-exploration.mp3.
+
       Importante:
       Usa únicamente un archivo de audio para el que tengas permiso/licencia.
 
@@ -1310,6 +1313,7 @@
 
     if (bgMusic && audioBtn) {
       setMusicVolume();
+      bgMusic.load();
 
       audioBtn.addEventListener("click", toggleMusic);
 
@@ -1325,7 +1329,7 @@
           "aria-label",
           "No se encontró el archivo de música assets/audio/coraline-exploration.mp3"
         );
-        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3");
+        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-2");
       });
 
       // Intento de autoplay al cargar.
