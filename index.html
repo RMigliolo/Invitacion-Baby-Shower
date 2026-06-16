@@ -1237,22 +1237,40 @@
 
     // Melodía original tipo canción de cuna, lenta y suave.
     const lullabyNotes = [
-      { f: 392.00, d: 0.70 }, // G4
-      { f: 440.00, d: 0.70 }, // A4
-      { f: 493.88, d: 0.95 }, // B4
-      { f: 440.00, d: 0.80 },
-      { f: 392.00, d: 0.90 },
-      { f: 329.63, d: 1.05 }, // E4
-      { f: 392.00, d: 0.85 },
-      { f: 440.00, d: 1.15 },
-      { f: 392.00, d: 0.75 },
-      { f: 440.00, d: 0.75 },
-      { f: 493.88, d: 0.90 },
-      { f: 587.33, d: 1.05 }, // D5
-      { f: 493.88, d: 0.85 },
-      { f: 440.00, d: 0.85 },
-      { f: 392.00, d: 1.40 },
-      { f: 0,      d: 0.70 }
+      // Melodía original más continua, dulce y similar a canción de cuna.
+      { f: 392.00, d: 0.42 }, // G4
+      { f: 440.00, d: 0.42 }, // A4
+      { f: 493.88, d: 0.52 }, // B4
+      { f: 440.00, d: 0.42 },
+      { f: 392.00, d: 0.52 },
+      { f: 329.63, d: 0.58 }, // E4
+      { f: 392.00, d: 0.42 },
+      { f: 440.00, d: 0.58 },
+
+      { f: 493.88, d: 0.42 }, // B4
+      { f: 523.25, d: 0.42 }, // C5
+      { f: 587.33, d: 0.58 }, // D5
+      { f: 523.25, d: 0.42 },
+      { f: 493.88, d: 0.52 },
+      { f: 440.00, d: 0.58 },
+      { f: 392.00, d: 0.72 },
+
+      { f: 329.63, d: 0.42 }, // E4
+      { f: 392.00, d: 0.42 },
+      { f: 440.00, d: 0.52 },
+      { f: 392.00, d: 0.42 },
+      { f: 329.63, d: 0.52 },
+      { f: 293.66, d: 0.58 }, // D4
+      { f: 329.63, d: 0.42 },
+      { f: 392.00, d: 0.72 },
+
+      { f: 440.00, d: 0.42 },
+      { f: 493.88, d: 0.42 },
+      { f: 523.25, d: 0.52 },
+      { f: 493.88, d: 0.42 },
+      { f: 440.00, d: 0.52 },
+      { f: 392.00, d: 0.95 },
+      { f: 0,      d: 0.28 }
     ];
 
     function setupAudio() {
@@ -1262,7 +1280,7 @@
       masterGain = audioContext.createGain();
 
       // Volumen general muy bajo y agradable.
-      masterGain.gain.setValueAtTime(0.018, audioContext.currentTime);
+      masterGain.gain.setValueAtTime(0.045, audioContext.currentTime);
       masterGain.connect(audioContext.destination);
     }
 
@@ -1286,7 +1304,7 @@
       filter.Q.setValueAtTime(0.55, now);
 
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.14, now + 0.16);
+      gain.gain.exponentialRampToValueAtTime(0.20, now + 0.12);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
       oscMain.connect(gain);
@@ -1325,8 +1343,8 @@
 
       noteIndex = (noteIndex + 1) % lullabyNotes.length;
 
-      // Tempo lento tipo canción de cuna.
-      nextNoteTimer = setTimeout(scheduleNextNote, note.d * 1000 + 130);
+      // Tempo más continuo tipo canción de cuna.
+      nextNoteTimer = setTimeout(scheduleNextNote, note.d * 1000 + 45);
     }
 
     async function startLullaby() {
