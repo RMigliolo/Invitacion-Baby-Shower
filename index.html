@@ -876,7 +876,7 @@
     Los navegadores pueden bloquear la reproducción automática con sonido; por eso
     el botón queda funcional para activar o pausar.
   -->
-  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-2" preload="auto" loop playsinline></audio>
+  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-3" preload="auto" autoplay loop playsinline muted></audio>
   <button class="audio-control" id="audioBtn" type="button" aria-label="Pausar o activar música"><span id="audioIcon">♪</span><span class="audio-label" id="audioLabel">Música</span></button>
 
   <main class="page">
@@ -1228,18 +1228,19 @@
       Archivo requerido:
       assets/audio/coraline-exploration.mp3
 
-      En el HTML se usa ?v=20260616-2 solo para evitar caché.
+      En el HTML se usa ?v=20260616-3 solo para evitar caché.
       El nombre real del archivo debe seguir siendo coraline-exploration.mp3.
 
       Importante:
       Usa únicamente un archivo de audio para el que tengas permiso/licencia.
 
-      Sobre autoplay:
-      Chrome, Safari y varios navegadores móviles pueden bloquear la música
-      automática con sonido. Por eso este código:
-      1. Intenta reproducir al abrir.
-      2. Si el navegador lo bloquea, activa la música con el primer toque/clic.
-      3. Mantiene el botón funcional para pausar y reanudar.
+      Autoplay:
+      Los navegadores modernos pueden bloquear música automática con sonido.
+      Este bloque usa la estrategia más compatible:
+      1. Inicia el audio desde la etiqueta <audio autoplay muted>.
+      2. Intenta activar sonido al cargar la página.
+      3. Si el navegador lo bloquea, activa la música con el primer toque/clic.
+      4. El botón permite pausar o reanudar.
     */
 
     const bgMusic = document.getElementById("bgMusic");
@@ -1249,21 +1250,26 @@
 
     let musicUnlocked = false;
     let userPausedMusic = false;
-    const MUSIC_VOLUME = 0.38;
+    const MUSIC_VOLUME = 0.42;
 
-    function setMusicVolume() {
+    function setMusicVolume(volume = MUSIC_VOLUME) {
       if (!bgMusic) return;
-      bgMusic.volume = MUSIC_VOLUME;
+      bgMusic.volume = volume;
     }
 
     function updateAudioButton() {
       if (!bgMusic || !audioBtn || !audioIcon || !audioLabel) return;
 
-      if (!bgMusic.paused) {
+      if (!bgMusic.paused && !bgMusic.muted) {
         audioBtn.classList.add("playing");
         audioIcon.textContent = "❚❚";
         audioLabel.textContent = "Pausar";
         audioBtn.setAttribute("aria-label", "Pausar música");
+      } else if (!bgMusic.paused && bgMusic.muted) {
+        audioBtn.classList.add("playing");
+        audioIcon.textContent = "♪";
+        audioLabel.textContent = "Activar";
+        audioBtn.setAttribute("aria-label", "Activar sonido");
       } else {
         audioBtn.classList.remove("playing");
         audioIcon.textContent = "♪";
@@ -1272,12 +1278,42 @@
       }
     }
 
-    async function playMusic() {
+    function fadeInVolume() {
+      if (!bgMusic) return;
+
+      let step = 0;
+      const steps = 10;
+      const target = MUSIC_VOLUME;
+
+      bgMusic.volume = 0.05;
+      const fade = setInterval(() => {
+        step++;
+        bgMusic.volume = Math.min(target, 0.05 + (target - 0.05) * (step / steps));
+
+        if (step >= steps) {
+          clearInterval(fade);
+          bgMusic.volume = target;
+        }
+      }, 120);
+    }
+
+    async function playMusic({ forceSound = true } = {}) {
       if (!bgMusic) return false;
 
       try {
         setMusicVolume();
+
+        if (forceSound) {
+          bgMusic.muted = false;
+        }
+
         await bgMusic.play();
+
+        if (forceSound) {
+          bgMusic.muted = false;
+          fadeInVolume();
+        }
+
         musicUnlocked = true;
         userPausedMusic = false;
         updateAudioButton();
@@ -1288,11 +1324,41 @@
       }
     }
 
+    async function startAutomaticMusic() {
+      if (!bgMusic || userPausedMusic) return;
+
+      // Primer intento: autoplay con sonido.
+      bgMusic.muted = false;
+      setMusicVolume();
+
+      const soundStarted = await playMusic({ forceSound: true });
+      if (soundStarted) return;
+
+      // Segundo intento: autoplay permitido en silencio.
+      try {
+        bgMusic.muted = true;
+        bgMusic.volume = 0;
+        await bgMusic.play();
+
+        // Intento de activar sonido después de que el audio ya está corriendo.
+        setTimeout(() => {
+          if (!userPausedMusic) {
+            bgMusic.muted = false;
+            fadeInVolume();
+            updateAudioButton();
+          }
+        }, 900);
+      } catch (error) {
+        updateAudioButton();
+      }
+    }
+
     function pauseMusic() {
       if (!bgMusic) return;
 
       userPausedMusic = true;
       bgMusic.pause();
+      bgMusic.muted = false;
       updateAudioButton();
     }
 
@@ -1304,8 +1370,9 @@
 
       if (!bgMusic) return;
 
-      if (bgMusic.paused) {
-        await playMusic();
+      if (bgMusic.paused || bgMusic.muted) {
+        bgMusic.muted = false;
+        await playMusic({ forceSound: true });
       } else {
         pauseMusic();
       }
@@ -1319,6 +1386,7 @@
 
       bgMusic.addEventListener("play", updateAudioButton);
       bgMusic.addEventListener("pause", updateAudioButton);
+      bgMusic.addEventListener("volumechange", updateAudioButton);
       bgMusic.addEventListener("ended", updateAudioButton);
 
       bgMusic.addEventListener("error", () => {
@@ -1329,32 +1397,36 @@
           "aria-label",
           "No se encontró el archivo de música assets/audio/coraline-exploration.mp3"
         );
-        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-2");
+        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-3");
       });
 
-      // Intento de autoplay al cargar.
+      // Intentos de arranque automático lo antes posible.
+      document.addEventListener("DOMContentLoaded", () => {
+        startAutomaticMusic();
+      });
+
       window.addEventListener("load", () => {
-        setTimeout(() => {
-          if (!userPausedMusic && bgMusic.paused) {
-            playMusic();
-          }
-        }, 700);
+        setTimeout(startAutomaticMusic, 300);
+        setTimeout(startAutomaticMusic, 1200);
       });
 
-      // Desbloqueo en el primer gesto del usuario si el autoplay fue bloqueado.
+      // Si el navegador bloquea el sonido, el primer gesto lo desbloquea.
       const unlockMusicOnce = async () => {
-        if (!musicUnlocked && !userPausedMusic && bgMusic.paused) {
-          await playMusic();
+        if (!userPausedMusic) {
+          bgMusic.muted = false;
+          await playMusic({ forceSound: true });
         }
 
         window.removeEventListener("pointerdown", unlockMusicOnce);
         window.removeEventListener("touchstart", unlockMusicOnce);
         window.removeEventListener("keydown", unlockMusicOnce);
+        window.removeEventListener("scroll", unlockMusicOnce);
       };
 
       window.addEventListener("pointerdown", unlockMusicOnce, { once: true });
       window.addEventListener("touchstart", unlockMusicOnce, { once: true });
       window.addEventListener("keydown", unlockMusicOnce, { once: true });
+      window.addEventListener("scroll", unlockMusicOnce, { once: true });
 
       updateAudioButton();
     }
