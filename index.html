@@ -757,6 +757,121 @@
       font-size: 1.05rem;
     }
 
+    .intro-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(243,199,210,.42), transparent 24%),
+        radial-gradient(circle at 82% 16%, rgba(200,228,243,.42), transparent 25%),
+        radial-gradient(circle at 50% 84%, rgba(244,227,180,.28), transparent 28%),
+        linear-gradient(135deg, #ffffff 0%, #f8f5ef 48%, #ece8e1 100%);
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .75s ease, visibility .75s ease;
+    }
+
+    .intro-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-screen::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(201,164,92,.30);
+      border-radius: 30px;
+      pointer-events: none;
+    }
+
+    .intro-screen::after {
+      content: "✦  ◌  ✧  ◌  ✦";
+      position: absolute;
+      top: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(201,164,92,.32);
+      letter-spacing: .45rem;
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    .intro-card {
+      width: min(560px, 100%);
+      padding: clamp(34px, 7vw, 58px) clamp(22px, 5vw, 44px);
+      border-radius: 30px;
+      border: 1px solid rgba(201,164,92,.36);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 28px 90px rgba(92,75,48,.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .intro-card::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 22px;
+      border: 1px solid rgba(201,164,92,.22);
+      pointer-events: none;
+    }
+
+    .intro-card .script {
+      display: block;
+      font-size: clamp(2.4rem, 8vw, 4.7rem);
+      margin-bottom: -4px;
+    }
+
+    .intro-card h2 {
+      font-size: clamp(1.45rem, 5vw, 2.4rem);
+      margin-bottom: 10px;
+    }
+
+    .intro-card p {
+      max-width: 410px;
+      margin: 0 auto;
+    }
+
+    .intro-icons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 20px 0 4px;
+      opacity: .55;
+    }
+
+    .intro-icons img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      filter: saturate(.78);
+    }
+
+    .open-invitation-btn {
+      margin-top: 28px;
+      min-width: 230px;
+      animation: pulseSoft 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% {
+        transform: translateY(0);
+        box-shadow: 0 12px 24px rgba(159,122,50,.18);
+      }
+      50% {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 38px rgba(159,122,50,.28);
+      }
+    }
+
     @media (max-width: 560px) {
       .audio-control {
         right: 12px;
@@ -888,6 +1003,28 @@
 </head>
 
 <body>
+  <div class="intro-screen" id="introScreen" aria-label="Pantalla inicial de invitación">
+    <div class="intro-card">
+      <span class="eyebrow">Baby Shower</span>
+      <span class="script">Estás invitado</span>
+      <h2>Nuestro Bebé</h2>
+      <div class="gold-line"></div>
+      <p>
+        Abre la invitación y acompáñanos a celebrar una dulce espera llena de cariño.
+      </p>
+
+      <div class="intro-icons" aria-hidden="true">
+        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9f8.png" alt="">
+        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f5dd-fe0f.png" alt="">
+        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f338.png" alt="">
+      </div>
+
+      <button class="btn open-invitation-btn" id="openInvitationBtn" type="button">
+        Abrir invitación
+      </button>
+    </div>
+  </div>
+
   <div class="thread-lines"></div>
 
   <div class="web-png-decor" aria-hidden="true">
@@ -918,7 +1055,7 @@
     Los navegadores pueden bloquear la reproducción automática con sonido; por eso
     el botón queda funcional para activar o pausar.
   -->
-  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-4" preload="auto" autoplay loop playsinline muted></audio>
+  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3?v=20260616-5" preload="auto" loop playsinline></audio>
   <button class="audio-control" id="audioBtn" type="button" aria-label="Pausar o activar música"><span id="audioIcon">♪</span><span class="audio-label" id="audioLabel">Música</span></button>
 
   <div class="sound-toast" id="soundToast" role="button" tabindex="0" aria-label="Activar música">
@@ -1269,19 +1406,17 @@
     }
 
     // ==
-    // MÚSICA DE FONDO DESDE ARCHIVO MP3
+    // MÚSICA DE FONDO DESDE ARCHIVO MP3 + PANTALLA INICIAL
     // ==
     /*
       Archivo requerido:
       assets/audio/coraline-exploration.mp3
 
-      En el HTML se usa ?v=20260616-4 solo para evitar caché.
+      En el HTML se usa ?v=20260616-5 solo para evitar caché.
       El nombre real del archivo debe seguir siendo coraline-exploration.mp3.
 
-      Chrome:
-      Chrome suele bloquear audio automático con sonido. La forma más fuerte
-      permitida por Chrome es iniciar el audio en silencio con autoplay muted,
-      precargarlo y quitar silencio al primer gesto del usuario.
+      La pantalla "Abrir invitación" funciona como gesto real del usuario.
+      Eso permite que Chrome reproduzca el audio con sonido de forma confiable.
     */
 
     const bgMusic = document.getElementById("bgMusic");
@@ -1289,35 +1424,31 @@
     const audioIcon = document.getElementById("audioIcon");
     const audioLabel = document.getElementById("audioLabel");
     const soundToast = document.getElementById("soundToast");
+    const introScreen = document.getElementById("introScreen");
+    const openInvitationBtn = document.getElementById("openInvitationBtn");
 
     let musicUnlocked = false;
     let userPausedMusic = false;
-    let toastTimer = null;
+    let invitationOpened = false;
     const MUSIC_VOLUME = 0.42;
-
-    function isChromeLike() {
-      return /Chrome|CriOS|Chromium|Edg/i.test(navigator.userAgent);
-    }
 
     function setMusicVolume(volume = MUSIC_VOLUME) {
       if (!bgMusic) return;
       bgMusic.volume = volume;
     }
 
-    function showSoundToast() {
-      if (!soundToast || userPausedMusic || musicUnlocked) return;
-
-      soundToast.classList.add("show");
-
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        soundToast.classList.remove("show");
-      }, 6500);
-    }
-
     function hideSoundToast() {
       if (!soundToast) return;
       soundToast.classList.remove("show");
+    }
+
+    function showSoundToast() {
+      if (!soundToast || userPausedMusic || musicUnlocked) return;
+      soundToast.classList.add("show");
+
+      setTimeout(() => {
+        soundToast.classList.remove("show");
+      }, 5200);
     }
 
     function updateAudioButton() {
@@ -1361,24 +1492,6 @@
       }, 90);
     }
 
-    async function startMutedAutoplay() {
-      if (!bgMusic || userPausedMusic) return false;
-
-      try {
-        bgMusic.muted = true;
-        bgMusic.volume = 0;
-        bgMusic.setAttribute("muted", "");
-        bgMusic.setAttribute("autoplay", "");
-        bgMusic.setAttribute("playsinline", "");
-        await bgMusic.play();
-        updateAudioButton();
-        return true;
-      } catch (error) {
-        updateAudioButton();
-        return false;
-      }
-    }
-
     async function playWithSound() {
       if (!bgMusic) return false;
 
@@ -1387,6 +1500,7 @@
         bgMusic.removeAttribute("muted");
         setMusicVolume();
         await bgMusic.play();
+
         fadeInVolume();
         musicUnlocked = true;
         userPausedMusic = false;
@@ -1395,22 +1509,6 @@
       } catch (error) {
         updateAudioButton();
         return false;
-      }
-    }
-
-    async function startAutomaticMusic() {
-      if (!bgMusic || userPausedMusic) return;
-
-      // 1) Chrome casi siempre permite esto: audio corriendo en muted.
-      await startMutedAutoplay();
-
-      // 2) Intento de sonido real. Algunos navegadores lo permiten; Chrome puede bloquearlo.
-      const soundOk = await playWithSound();
-
-      // 3) Si Chrome bloquea el sonido, dejamos el audio ya cargado/corriendo y mostramos aviso.
-      if (!soundOk && isChromeLike()) {
-        await startMutedAutoplay();
-        showSoundToast();
       }
     }
 
@@ -1440,23 +1538,49 @@
       }
     }
 
-    async function unlockMusicFromGesture() {
-      if (!bgMusic || userPausedMusic) return;
-      await playWithSound();
+    async function openInvitation() {
+      invitationOpened = true;
+
+      if (introScreen) {
+        introScreen.classList.add("hide");
+
+        setTimeout(() => {
+          introScreen.style.display = "none";
+        }, 780);
+      }
+
+      const started = await playWithSound();
+
+      if (!started) {
+        showSoundToast();
+      }
     }
 
     if (bgMusic && audioBtn) {
       setMusicVolume();
       bgMusic.load();
 
+      if (openInvitationBtn) {
+        openInvitationBtn.addEventListener("click", openInvitation);
+      }
+
+      if (introScreen) {
+        introScreen.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openInvitation();
+          }
+        });
+      }
+
       audioBtn.addEventListener("click", toggleMusic);
 
       if (soundToast) {
-        soundToast.addEventListener("click", unlockMusicFromGesture);
+        soundToast.addEventListener("click", playWithSound);
         soundToast.addEventListener("keydown", (event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            unlockMusicFromGesture();
+            playWithSound();
           }
         });
       }
@@ -1474,46 +1598,19 @@
           "aria-label",
           "No se encontró el archivo de música assets/audio/coraline-exploration.mp3"
         );
-        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-4");
+        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3?v=20260616-5");
       });
 
-      // Intentos tempranos para Chrome y navegadores compatibles.
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", startAutomaticMusic);
-      } else {
-        startAutomaticMusic();
-      }
-
-      window.addEventListener("load", () => {
-        setTimeout(startAutomaticMusic, 250);
-        setTimeout(startAutomaticMusic, 1100);
-        setTimeout(() => {
-          if (bgMusic.paused || bgMusic.muted) showSoundToast();
-        }, 1800);
-      });
-
-      // Cualquier gesto real desbloquea sonido en Chrome.
-      const unlockEvents = ["pointerdown", "pointerup", "click", "touchstart", "touchend", "keydown", "wheel", "scroll"];
-
-      const unlockMusicOnce = async () => {
-        await unlockMusicFromGesture();
-
-        unlockEvents.forEach((eventName) => {
-          window.removeEventListener(eventName, unlockMusicOnce);
-          document.removeEventListener(eventName, unlockMusicOnce);
-        });
+      // Fallback: si por alguna razón el usuario interactúa fuera del botón,
+      // también se desbloquea la música después de abrir la invitación.
+      const unlockAfterOpen = async () => {
+        if (invitationOpened && !userPausedMusic && (bgMusic.paused || bgMusic.muted)) {
+          await playWithSound();
+        }
       };
 
-      unlockEvents.forEach((eventName) => {
-        window.addEventListener(eventName, unlockMusicOnce, { once: true, passive: true });
-        document.addEventListener(eventName, unlockMusicOnce, { once: true, passive: true });
-      });
-
-      // Refuerzo cuando la pestaña vuelve a estar visible.
-      document.addEventListener("visibilitychange", () => {
-        if (!document.hidden && !userPausedMusic && (bgMusic.paused || bgMusic.muted)) {
-          startAutomaticMusic();
-        }
+      ["pointerdown", "click", "touchstart", "keydown"].forEach((eventName) => {
+        window.addEventListener(eventName, unlockAfterOpen, { passive: true });
       });
 
       updateAudioButton();
