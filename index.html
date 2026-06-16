@@ -867,8 +867,16 @@
     <i></i><i></i><i></i><i></i><i></i><i></i>
   </div>
 
-  <!-- Música generada con Web Audio: no requiere archivo mp3.
-       Por seguridad, los navegadores solo permiten iniciarla cuando el invitado toca el botón. -->
+  <!--
+    Música de fondo:
+    Coloca tu archivo de audio en:
+    assets/audio/coraline-exploration.mp3
+
+    Nota: usa únicamente un archivo de audio para el que tengas permiso/licencia.
+    Los navegadores pueden bloquear la reproducción automática con sonido; por eso
+    el botón queda funcional para activar o pausar.
+  -->
+  <audio id="bgMusic" src="assets/audio/coraline-exploration.mp3" preload="auto" loop playsinline></audio>
   <button class="audio-control" id="audioBtn" type="button" aria-label="Pausar o activar música"><span id="audioIcon">♪</span><span class="audio-label" id="audioLabel">Música</span></button>
 
   <main class="page">
@@ -1097,16 +1105,16 @@
   </main>
 
   <script>
-    // ==============================
+    // ==
     // CONFIGURACIÓN GENERAL
-    // ==============================
+    // ==
     const eventDate = new Date("2026-06-20T16:00:00-06:00").getTime();
     const whatsappNumber = "523222912998";
     let genderChoice = "";
 
-    // ==============================
+    // ==
     // CUENTA REGRESIVA
-    // ==============================
+    // ==
     const timer = setInterval(() => {
       const now = new Date().getTime();
       const distance = eventDate - now;
@@ -1131,9 +1139,9 @@
       document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
     }, 1000);
 
-    // ==============================
+    // ==
     // CARRUSEL
-    // ==============================
+    // ==
     let currentSlide = 0;
     const slides = document.getElementById("slides");
     const totalSlides = slides.children.length;
@@ -1170,9 +1178,9 @@
       moveSlide(1);
     }, 6000);
 
-    // ==============================
+    // ==
     // DINÁMICA NIÑO / NIÑA
-    // ==============================
+    // ==
     function selectGender(value, element) {
       genderChoice = value;
 
@@ -1183,9 +1191,9 @@
       element.classList.add("selected");
     }
 
-    // ==============================
+    // ==
     // CONFIRMACIÓN POR WHATSAPP
-    // ==============================
+    // ==
     function enviarWhatsApp(event) {
       event.preventDefault();
 
@@ -1213,113 +1221,42 @@
       window.open(url, "_blank");
     }
 
-    // ==============================
-    // MÚSICA DE CUNA TENUE
-    // ==============================
+    // ==
+    // MÚSICA DE FONDO DESDE ARCHIVO MP3
+    // ==
     /*
-      Nota importante:
-      La mayoría de navegadores, sobre todo en celular, bloquean el audio automático
-      si la persona no ha tocado la pantalla. Este código intenta iniciar la música
-      al abrir la invitación con volumen bajo; si el navegador la bloquea, queda lista
-      para activarse con el primer toque en pantalla o con el botón de música.
+      Archivo requerido:
+      assets/audio/coraline-exploration.mp3
+
+      Importante:
+      Usa únicamente un archivo de audio para el que tengas permiso/licencia.
+
+      Sobre autoplay:
+      Chrome, Safari y varios navegadores móviles pueden bloquear la música
+      automática con sonido. Por eso este código:
+      1. Intenta reproducir al abrir.
+      2. Si el navegador lo bloquea, activa la música con el primer toque/clic.
+      3. Mantiene el botón funcional para pausar y reanudar.
     */
 
-    let audioContext = null;
-    let masterGain = null;
-    let lullabyPlaying = false;
-    let lullabyStartedOnce = false;
-    let nextNoteTimer = null;
-    let noteIndex = 0;
-
+    const bgMusic = document.getElementById("bgMusic");
     const audioBtn = document.getElementById("audioBtn");
     const audioIcon = document.getElementById("audioIcon");
     const audioLabel = document.getElementById("audioLabel");
 
-    // Melodía original tipo canción de cuna, lenta y suave.
-    const lullabyNotes = [
-      // Melodía original más continua, dulce y similar a canción de cuna.
-      { f: 392.00, d: 0.42 }, // G4
-      { f: 440.00, d: 0.42 }, // A4
-      { f: 493.88, d: 0.52 }, // B4
-      { f: 440.00, d: 0.42 },
-      { f: 392.00, d: 0.52 },
-      { f: 329.63, d: 0.58 }, // E4
-      { f: 392.00, d: 0.42 },
-      { f: 440.00, d: 0.58 },
+    let musicUnlocked = false;
+    let userPausedMusic = false;
+    const MUSIC_VOLUME = 0.38;
 
-      { f: 493.88, d: 0.42 }, // B4
-      { f: 523.25, d: 0.42 }, // C5
-      { f: 587.33, d: 0.58 }, // D5
-      { f: 523.25, d: 0.42 },
-      { f: 493.88, d: 0.52 },
-      { f: 440.00, d: 0.58 },
-      { f: 392.00, d: 0.72 },
-
-      { f: 329.63, d: 0.42 }, // E4
-      { f: 392.00, d: 0.42 },
-      { f: 440.00, d: 0.52 },
-      { f: 392.00, d: 0.42 },
-      { f: 329.63, d: 0.52 },
-      { f: 293.66, d: 0.58 }, // D4
-      { f: 329.63, d: 0.42 },
-      { f: 392.00, d: 0.72 },
-
-      { f: 440.00, d: 0.42 },
-      { f: 493.88, d: 0.42 },
-      { f: 523.25, d: 0.52 },
-      { f: 493.88, d: 0.42 },
-      { f: 440.00, d: 0.52 },
-      { f: 392.00, d: 0.95 },
-      { f: 0,      d: 0.28 }
-    ];
-
-    function setupAudio() {
-      if (audioContext) return;
-
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      masterGain = audioContext.createGain();
-
-      // Volumen general muy bajo y agradable.
-      masterGain.gain.setValueAtTime(0.045, audioContext.currentTime);
-      masterGain.connect(audioContext.destination);
-    }
-
-    function createSoftTone(frequency, duration) {
-      if (!audioContext || !masterGain || !frequency) return;
-
-      const now = audioContext.currentTime;
-      const oscMain = audioContext.createOscillator();
-      const oscWarm = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      const filter = audioContext.createBiquadFilter();
-
-      oscMain.type = "sine";
-      oscWarm.type = "triangle";
-
-      oscMain.frequency.setValueAtTime(frequency, now);
-      oscWarm.frequency.setValueAtTime(frequency * 2, now);
-
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(1250, now);
-      filter.Q.setValueAtTime(0.55, now);
-
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.20, now + 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-      oscMain.connect(gain);
-      oscWarm.connect(gain);
-      gain.connect(filter);
-      filter.connect(masterGain);
-
-      oscMain.start(now);
-      oscWarm.start(now);
-      oscMain.stop(now + duration + 0.05);
-      oscWarm.stop(now + duration + 0.05);
+    function setMusicVolume() {
+      if (!bgMusic) return;
+      bgMusic.volume = MUSIC_VOLUME;
     }
 
     function updateAudioButton() {
-      if (lullabyPlaying) {
+      if (!bgMusic || !audioBtn || !audioIcon || !audioLabel) return;
+
+      if (!bgMusic.paused) {
         audioBtn.classList.add("playing");
         audioIcon.textContent = "❚❚";
         audioLabel.textContent = "Pausar";
@@ -1332,42 +1269,15 @@
       }
     }
 
-    function scheduleNextNote() {
-      if (!lullabyPlaying) return;
-
-      const note = lullabyNotes[noteIndex];
-
-      if (note.f > 0) {
-        createSoftTone(note.f, note.d);
-      }
-
-      noteIndex = (noteIndex + 1) % lullabyNotes.length;
-
-      // Tempo más continuo tipo canción de cuna.
-      nextNoteTimer = setTimeout(scheduleNextNote, note.d * 1000 + 45);
-    }
-
-    async function startLullaby() {
-      setupAudio();
+    async function playMusic() {
+      if (!bgMusic) return false;
 
       try {
-        if (audioContext.state === "suspended") {
-          await audioContext.resume();
-        }
-
-        if (audioContext.state !== "running") {
-          updateAudioButton();
-          return false;
-        }
-
-        if (!lullabyPlaying) {
-          lullabyPlaying = true;
-          lullabyStartedOnce = true;
-          noteIndex = 0;
-          updateAudioButton();
-          scheduleNextNote();
-        }
-
+        setMusicVolume();
+        await bgMusic.play();
+        musicUnlocked = true;
+        userPausedMusic = false;
+        updateAudioButton();
         return true;
       } catch (error) {
         updateAudioButton();
@@ -1375,53 +1285,76 @@
       }
     }
 
-    function stopLullaby() {
-      lullabyPlaying = false;
+    function pauseMusic() {
+      if (!bgMusic) return;
 
-      if (nextNoteTimer) {
-        clearTimeout(nextNoteTimer);
-        nextNoteTimer = null;
+      userPausedMusic = true;
+      bgMusic.pause();
+      updateAudioButton();
+    }
+
+    async function toggleMusic(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
       }
+
+      if (!bgMusic) return;
+
+      if (bgMusic.paused) {
+        await playMusic();
+      } else {
+        pauseMusic();
+      }
+    }
+
+    if (bgMusic && audioBtn) {
+      setMusicVolume();
+
+      audioBtn.addEventListener("click", toggleMusic);
+
+      bgMusic.addEventListener("play", updateAudioButton);
+      bgMusic.addEventListener("pause", updateAudioButton);
+      bgMusic.addEventListener("ended", updateAudioButton);
+
+      bgMusic.addEventListener("error", () => {
+        audioIcon.textContent = "!";
+        audioLabel.textContent = "Audio";
+        audioBtn.classList.remove("playing");
+        audioBtn.setAttribute(
+          "aria-label",
+          "No se encontró el archivo de música assets/audio/coraline-exploration.mp3"
+        );
+        console.warn("No se encontró o no se pudo cargar: assets/audio/coraline-exploration.mp3");
+      });
+
+      // Intento de autoplay al cargar.
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          if (!userPausedMusic && bgMusic.paused) {
+            playMusic();
+          }
+        }, 700);
+      });
+
+      // Desbloqueo en el primer gesto del usuario si el autoplay fue bloqueado.
+      const unlockMusicOnce = async () => {
+        if (!musicUnlocked && !userPausedMusic && bgMusic.paused) {
+          await playMusic();
+        }
+
+        window.removeEventListener("pointerdown", unlockMusicOnce);
+        window.removeEventListener("touchstart", unlockMusicOnce);
+        window.removeEventListener("keydown", unlockMusicOnce);
+      };
+
+      window.addEventListener("pointerdown", unlockMusicOnce, { once: true });
+      window.addEventListener("touchstart", unlockMusicOnce, { once: true });
+      window.addEventListener("keydown", unlockMusicOnce, { once: true });
 
       updateAudioButton();
     }
 
-    async function toggleLullaby() {
-      if (lullabyPlaying) {
-        stopLullaby();
-      } else {
-        await startLullaby();
-      }
-    }
-
-    audioBtn.addEventListener("click", async (event) => {
-      event.stopPropagation();
-      await toggleLullaby();
-    });
-
-    // Intento de reproducción automática al abrir.
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        startLullaby();
-      }, 650);
-    });
-
-    // Si el navegador bloquea el autoplay, se activa con el primer toque/clic.
-    const unlockAudioOnce = async () => {
-      if (!lullabyStartedOnce) {
-        await startLullaby();
-      }
-
-      window.removeEventListener("pointerdown", unlockAudioOnce);
-      window.removeEventListener("touchstart", unlockAudioOnce);
-      window.removeEventListener("keydown", unlockAudioOnce);
-    };
-
-    window.addEventListener("pointerdown", unlockAudioOnce, { once: true });
-    window.addEventListener("touchstart", unlockAudioOnce, { once: true });
-    window.addEventListener("keydown", unlockAudioOnce, { once: true });
-
-    updateAudioButton();
   </script>
 </body>
 </html>
